@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleet Grid AI · Naval strategy game against a probability AI</title>
+    <meta name="description" content="An original naval grid strategy game. The computer opponent aims with a probability heatmap that you can watch while it plays." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="head">
+        <div>
+          <h1>Fleet Grid <span>AI</span></h1>
+          <p>Find and sink the computer's hidden fleet before it sinks yours. The computer aims using a probability heatmap.</p>
+        </div>
+        <div class="controls">
+          <div class="field">
+            <label for="mode">Computer</label>
+            <select id="mode">
+              <option value="prob" selected>Strategist (probability AI)</option>
+              <option value="hunt">Hunter (hunt and target)</option>
+              <option value="random">Rookie (random shots)</option>
+            </select>
+          </div>
+          <label class="switch"><input type="checkbox" id="heat" /> <span>Show AI heatmap</span></label>
+          <button type="button" class="btn" id="shuffle">Shuffle my fleet</button>
+          <button type="button" class="btn btn--primary" id="new">New battle</button>
+        </div>
+      </header>
+
+      <p class="status" id="status" role="status">Arrange your fleet, then fire at the enemy waters on the right.</p>
+
+      <div class="boards">
+        <section class="board-card" aria-labelledby="mine-title">
+          <div class="board-head">
+            <h2 id="mine-title">Your waters</h2>
+            <ul class="fleet" id="my-fleet" aria-label="Your ships"></ul>
+          </div>
+          <div class="grid" id="mine" aria-label="Your board. The computer fires here." role="grid"></div>
+        </section>
+        <section class="board-card board-card--enemy" aria-labelledby="enemy-title">
+          <div class="board-head">
+            <h2 id="enemy-title">Enemy waters</h2>
+            <ul class="fleet" id="enemy-fleet" aria-label="Enemy ships"></ul>
+          </div>
+          <div class="grid grid--target" id="enemy" aria-label="Enemy board. Choose a cell to fire. Use the arrow keys to move." role="grid"></div>
+        </section>
+      </div>
+
+      <section class="stats" aria-label="Battle statistics">
+        <div><b id="s-shots">0</b><span>Your shots</span></div>
+        <div><b id="s-acc">0%</b><span>Your accuracy</span></div>
+        <div><b id="s-ai-shots">0</b><span>AI shots</span></div>
+        <div><b id="s-ai-acc">0%</b><span>AI accuracy</span></div>
+      </section>
+
+      <details class="how">
+        <summary>How the AI aims</summary>
+        <ol>
+          <li>For every enemy ship that is still afloat, the AI tries <strong>every possible position</strong> on your board (across and down).</li>
+          <li>It throws away positions that cross a known miss or a ship it already sank.</li>
+          <li>Each remaining position adds 1 to every cell it covers. Positions that pass through an unsunk <strong>hit</strong> count far more, because the ship must be there.</li>
+          <li>The result is a <strong>probability heatmap</strong>; the AI fires at the hottest cell. Turn on "Show AI heatmap" to watch it think.</li>
+          <li>"Hunter" mode uses the simpler hunt-and-target method, and "Rookie" fires at random, so you can compare them.</li>
+        </ol>
+      </details>
+      <footer class="foot">Original game · AI-assisted build for the portfolio of Dustin Clarence Costo.</footer>
+    </main>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay__card" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <h2 id="ov-title">Victory</h2>
+        <p id="ov-text"></p>
+        <button type="button" class="btn btn--primary" id="again">Play again</button>
+      </div>
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
