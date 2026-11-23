@@ -20,7 +20,17 @@ function placeFleet() {
       const r = Math.floor(Math.random() * (across ? N : N - s.len + 1));
       const c = Math.floor(Math.random() * (across ? N - s.len + 1 : N));
       const cells = Array.from({ length: s.len }, (_, k) => (across ? r * N + c + k : (r + k) * N + c));
-      if (cells.every((i) => owner[i] === -1)) {
+      // Ships may not touch each other, not even at the corners.
+      const clear = cells.every((i) => {
+        const r0 = Math.floor(i / N), c0 = i % N;
+        for (let dr = -1; dr <= 1; dr++)
+          for (let dc = -1; dc <= 1; dc++) {
+            const rr = r0 + dr, cc = c0 + dc;
+            if (rr >= 0 && rr < N && cc >= 0 && cc < N && owner[rr * N + cc] !== -1) return false;
+          }
+        return true;
+      });
+      if (clear) {
         cells.forEach((i) => (owner[i] = id));
         return { ...s, id, cells, hits: 0 };
       }

@@ -62,6 +62,7 @@
       <details class="how">
         <summary>How the AI aims</summary>
         <ol>
+          <li>Ships never touch each other, not even at the corners.</li>
           <li>For every enemy ship that is still afloat, the AI tries <strong>every possible position</strong> on your board (across and down).</li>
           <li>It throws away positions that cross a known miss or a ship it already sank.</li>
           <li>Each remaining position adds 1 to every cell it covers. Positions that pass through an unsunk <strong>hit</strong> count far more, because the ship must be there.</li>
