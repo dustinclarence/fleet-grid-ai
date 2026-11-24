@@ -6,6 +6,8 @@ An original naval grid strategy game. Find and sink the computer's hidden fleet 
 
 ## Features
 
+- Place your own fleet before each battle (or use Random). Both sides get the same 5 ships (17 squares), and ships may not touch
+- Choose who fires first: you, the computer or random
 - Three AI opponents: probability heatmap, hunt-and-target, random
 - Toggle to show the AI's heatmap on your board
 - Keyboard play with arrow keys

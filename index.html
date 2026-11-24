@@ -28,12 +28,34 @@
             </select>
           </div>
           <label class="switch"><input type="checkbox" id="heat" /> <span>Show AI heatmap</span></label>
-          <button type="button" class="btn" id="shuffle">Shuffle my fleet</button>
           <button type="button" class="btn btn--primary" id="new">New battle</button>
         </div>
       </header>
 
-      <p class="status" id="status" role="status">Arrange your fleet, then fire at the enemy waters on the right.</p>
+      <p class="status" id="status" role="status">Set up your fleet, then fire at the enemy waters.</p>
+
+      <section class="setup" id="setup" aria-labelledby="setup-title">
+        <div class="setup__head">
+          <h2 id="setup-title">Set up your fleet</h2>
+          <p>You and the computer get exactly the same fleet: 5 ships, 17 squares. Choose a ship, then click your waters to place it. Ships may not touch, not even at the corners. Click a placed ship to move it.</p>
+        </div>
+        <div class="setup__ships" id="ship-pick" role="group" aria-label="Your ships"></div>
+        <div class="setup__row">
+          <button type="button" class="btn" id="rotate">Rotate (now across)</button>
+          <button type="button" class="btn" id="random">Random</button>
+          <button type="button" class="btn" id="clear">Clear</button>
+          <div class="field field--inline">
+            <label for="first">Who fires first</label>
+            <select id="first">
+              <option value="you" selected>You</option>
+              <option value="cpu">Computer</option>
+              <option value="random">Random</option>
+            </select>
+          </div>
+          <span class="placed" id="placed" aria-live="polite">0 of 5 ships placed</span>
+          <button type="button" class="btn btn--primary" id="start" disabled>Start battle</button>
+        </div>
+      </section>
 
       <div class="boards">
         <section class="board-card" aria-labelledby="mine-title">
@@ -41,14 +63,14 @@
             <h2 id="mine-title">Your waters</h2>
             <ul class="fleet" id="my-fleet" aria-label="Your ships"></ul>
           </div>
-          <div class="grid" id="mine" aria-label="Your board. The computer fires here." role="grid"></div>
+          <div class="grid" id="mine" aria-label="Your board. The computer fires here." role="group"></div>
         </section>
         <section class="board-card board-card--enemy" aria-labelledby="enemy-title">
           <div class="board-head">
             <h2 id="enemy-title">Enemy waters</h2>
             <ul class="fleet" id="enemy-fleet" aria-label="Enemy ships"></ul>
           </div>
-          <div class="grid grid--target" id="enemy" aria-label="Enemy board. Choose a cell to fire. Use the arrow keys to move." role="grid"></div>
+          <div class="grid grid--target" id="enemy" aria-label="Enemy board. Choose a cell to fire. Use the arrow keys to move." role="group"></div>
         </section>
       </div>
 
@@ -62,7 +84,7 @@
       <details class="how">
         <summary>How the AI aims</summary>
         <ol>
-          <li>Ships never touch each other, not even at the corners.</li>
+          <li>Both sides have the same fleet (Flagship 5, Cruiser 4, Frigate 3, Corvette 3, Scout 2), and ships never touch each other, not even at the corners.</li>
           <li>For every enemy ship that is still afloat, the AI tries <strong>every possible position</strong> on your board (across and down).</li>
           <li>It throws away positions that cross a known miss or a ship it already sank.</li>
           <li>Each remaining position adds 1 to every cell it covers. Positions that pass through an unsunk <strong>hit</strong> count far more, because the ship must be there.</li>
