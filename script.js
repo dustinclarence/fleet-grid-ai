@@ -166,6 +166,7 @@ function placeAt(at) {
   const owner = layoutOwner();
   if (owner[at] !== -1) {
     // clicked a ship you already placed: pick it up to move it
+    remember();
     chosen = owner[at];
     across = shipIsAcross(layout[chosen]);
     layout[chosen] = null;
@@ -182,24 +183,53 @@ function placeAt(at) {
     setStatus("That spot doesn't work: ships must fit on the board and may not touch each other, not even at the corners.");
     return;
   }
+  if (!past.length || past[past.length - 1].layout.some((c, k) => (c ? c.join() : '') !== (layout[k] ? layout[k].join() : ''))) remember();
   layout[chosen] = pv.cells;
   const placed = SHIPS[chosen].name;
   chosen = nextUnplaced(chosen + 1);
   setStatus(chosen < 0 ? 'All 5 ships placed. Choose who fires first, then press Start battle.' : `${placed} placed. Now place your ${SHIPS[chosen].name} (${SHIPS[chosen].len} squares).`);
   render();
 }
+let setupMode = 'own'; // 'own' = place ships yourself, 'random' = ready-made fleet
+const past = []; // earlier layouts, for Undo
+function remember() {
+  past.push({ layout: layout.map((c) => (c ? c.slice() : null)), mode: setupMode });
+  if (past.length > 50) past.shift();
+  $('undo-setup').disabled = false;
+}
+function undoSetup() {
+  const prev = past.pop();
+  if (!prev) return;
+  layout = prev.layout;
+  showMode(prev.mode);
+  chosen = nextUnplaced(0);
+  $('undo-setup').disabled = !past.length;
+  setStatus('Undone. ' + (layout.every(Boolean) ? 'All 5 ships are placed. Press Start battle when ready.' : `${layout.filter(Boolean).length} of 5 ships placed.`));
+  render();
+}
+function showMode(mode) {
+  setupMode = mode;
+  $('mode-own').setAttribute('aria-pressed', String(mode === 'own'));
+  $('mode-random').setAttribute('aria-pressed', String(mode === 'random'));
+  $('panel-own').hidden = mode !== 'own';
+  $('panel-random').hidden = mode !== 'random';
+}
 function randomLayout() {
+  remember();
   const b = placeFleet();
   layout = b.ships.map((sh) => sh.cells.slice());
   chosen = -1;
-  setStatus('Random fleet placed. Click a ship to move it, or press Start battle.');
+  showMode('random');
+  setStatus('A random fleet is ready. Press Start battle, or get a new random fleet.');
   render();
 }
 function clearLayout() {
+  if (layout.some(Boolean)) remember();
   layout = SHIPS.map(() => null);
   chosen = 0;
   across = true;
   syncRotate();
+  showMode('own');
   setStatus(`Place your ${SHIPS[0].name} (${SHIPS[0].len} squares). R or the Rotate button turns it.`);
   render();
 }
@@ -226,7 +256,9 @@ function newBattle() {
   render();
 }
 function startBattle() {
-  if (layout.some((c) => !c)) return;
+  if (phase !== 'setup' || layout.some((c) => !c)) return; // never starts twice
+  past.length = 0;
+  $('undo-setup').disabled = true;
   me = boardFrom(layout);
   enemy = placeFleet();
   hunter.queue = [];
@@ -438,6 +470,16 @@ $('again').addEventListener('click', newBattle);
 $('start').addEventListener('click', startBattle);
 $('random').addEventListener('click', randomLayout);
 $('clear').addEventListener('click', clearLayout);
+$('mode-random').addEventListener('click', () => (setupMode === 'random' && layout.every(Boolean) ? null : randomLayout()));
+$('mode-own').addEventListener('click', () => {
+  if (setupMode === 'own') return;
+  // keep the current ships so you can rearrange them; only "Clear all ships" empties the waters
+  showMode('own');
+  chosen = nextUnplaced(0);
+  setStatus(layout.some(Boolean) ? 'Your ships are kept. Click a ship to move it, or press Clear all ships to start from empty waters.' : `Place your ${SHIPS[0].name} (${SHIPS[0].len} squares). R or the Rotate button turns it.`);
+  render();
+});
+$('undo-setup').addEventListener('click', undoSetup);
 $('rotate').addEventListener('click', rotate);
 $('ship-pick').addEventListener('click', (e) => {
   const b = e.target.closest('[data-ship]');

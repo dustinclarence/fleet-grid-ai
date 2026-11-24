@@ -37,23 +37,56 @@
       <section class="setup" id="setup" aria-labelledby="setup-title">
         <div class="setup__head">
           <h2 id="setup-title">Set up your fleet</h2>
-          <p>You and the computer get exactly the same fleet: 5 ships, 17 squares. Choose a ship, then click your waters to place it. Ships may not touch, not even at the corners. Click a placed ship to move it.</p>
+          <p>You and the computer always get the same fleet: 5 ships, 17 squares. Ships may not touch each other, not even at the corners.</p>
         </div>
-        <div class="setup__ships" id="ship-pick" role="group" aria-label="Your ships"></div>
-        <div class="setup__row">
-          <button type="button" class="btn" id="rotate">Rotate (now across)</button>
-          <button type="button" class="btn" id="random">Random</button>
-          <button type="button" class="btn" id="clear">Clear</button>
-          <div class="field field--inline">
-            <label for="first">Who fires first</label>
-            <select id="first">
-              <option value="you" selected>You</option>
-              <option value="cpu">Computer</option>
-              <option value="random">Random</option>
-            </select>
+
+        <div class="step">
+          <h3 class="step__title"><span class="step__no" aria-hidden="true">1</span> How do you want to set up your fleet?</h3>
+          <div class="choice" role="group" aria-label="How to set up your fleet">
+            <button type="button" class="choice__btn" id="mode-own" aria-pressed="true">
+              <span class="choice__name">Place my own ships</span>
+              <span class="choice__desc">Arrange all five ships yourself.</span>
+            </button>
+            <button type="button" class="choice__btn" id="mode-random" aria-pressed="false">
+              <span class="choice__name">Use a random fleet</span>
+              <span class="choice__desc">All five ships are arranged for you in one click.</span>
+            </button>
           </div>
-          <span class="placed" id="placed" aria-live="polite">0 of 5 ships placed</span>
-          <button type="button" class="btn btn--primary" id="start" disabled>Start battle</button>
+
+          <div class="step__panel" id="panel-own">
+            <p class="step__hint">Pick a ship, then click your waters to place it. <b>R</b> or Rotate turns it. Click a placed ship to move it.</p>
+            <div class="setup__ships" id="ship-pick" role="group" aria-label="Your ships"></div>
+            <div class="setup__row">
+              <button type="button" class="btn" id="rotate">Rotate (now across)</button>
+              <button type="button" class="btn" id="clear">Clear all ships</button>
+            </div>
+          </div>
+
+          <div class="step__panel" id="panel-random" hidden>
+            <p class="step__hint">A ready-made fleet is on your waters. Don't like it? Get another one. You can still click a ship to move it.</p>
+            <div class="setup__row">
+              <button type="button" class="btn" id="random">New random fleet</button>
+            </div>
+          </div>
+          <div class="setup__row setup__row--undo">
+            <button type="button" class="btn" id="undo-setup" disabled>Undo</button>
+          </div>
+        </div>
+
+        <div class="step">
+          <h3 class="step__title"><span class="step__no" aria-hidden="true">2</span> Start the battle</h3>
+          <div class="setup__row">
+            <div class="field field--inline">
+              <label for="first">Who fires first</label>
+              <select id="first">
+                <option value="you" selected>You</option>
+                <option value="cpu">Computer</option>
+                <option value="random">Random</option>
+              </select>
+            </div>
+            <span class="placed" id="placed" aria-live="polite">0 of 5 ships placed</span>
+            <button type="button" class="btn btn--primary" id="start" disabled>Start battle</button>
+          </div>
         </div>
       </section>
 
